@@ -1,0 +1,17 @@
+# BGE Reranker API Dependencies
+# 适用于 RTX 5060 Ti 16G 优化配置
+
+# Web 框架
+fastapi>=0.104.0
+uvicorn[standard]>=0.24.0
+
+# 数据验证
+pydantic>=2.0.0
+
+# Transformers 生态
+transformers>=4.35.0
+torch>=2.0.0
+accelerate>=0.25.0
+
+# HTTP 客户端（可选，用于测试）
+requests>=2.31.0
