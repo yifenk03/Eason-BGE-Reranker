@@ -1,17 +1,9 @@
----
-AIGC:
-    ContentProducer: Minimax Agent AI
-    ContentPropagator: Minimax Agent AI
-    Label: AIGC
-    ProduceID: "00000000000000000000000000000000"
-    PropagateID: "00000000000000000000000000000000"
-    ReservedCode1: 304402203a116725bfa3945398d81e09a70fd3d0a33bc5ed5f2aeb0fbbca21d0f775b47c02200cfcdd15feded148e0ad067371ebb16f3b6911e0ba7de889060babc845571e32
-    ReservedCode2: 3046022100bc16479e10fae444c37e1cbbc444b56f3a6e746cd29d218176cfa39a0f6f04d1022100989a2a37b704f3cee9bdb775644e75f781458ce721715be974e6602a7d8f7279
----
 
 # BGE Reranker API
 
-基于 FastAPI 的本地 BGE 重排序模型推理服务，针对 RTX 5060 Ti 16G 显存进行了优化。
+本工具基于 FastAPI 的本地 BGE 重排序模型推理服务。
+
+由于LM studio/Ollama等常用工具不能完整支持rerank协议，在建立本地知识库时缺少reranker模型会大大降低准确率，本人试过多种方法部署reranker模型均觉得麻烦，遂写了这个脚本，可以CPU/GPU跑reranker模型（其实CPU就够用）。
 
 ## 功能特性
 
@@ -20,6 +12,8 @@ AIGC:
 - **混合精度**：采用 FP16 半精度，大幅降低显存占用
 - **批量处理**：支持批量文档重排序，最多 30 篇文档
 - **兼容性强**：符合 OpenAI-style API 格式，便于集成
+
+![主界面](GUI6.png)
 
 ## 环境要求
 
@@ -40,6 +34,10 @@ cd bge_rerank_api
 ```
 
 ### 2. 创建虚拟环境（推荐）
+
+建议安装miniconda创建环境。
+
+python创建环境命令：
 
 ```bash
 python -m venv venv
@@ -70,6 +68,8 @@ MODEL_PATH = r"I:\AI\APP\reranker\models\BAAI\bge-reranker-v2-m3"
 
 ### 启动服务
 
+建议先安装miniconda，修改启动bat内的路径，方便使用
+
 ```bash
 python bge_rerank_api.py
 ```
@@ -84,69 +84,6 @@ python bge_rerank_api.py
 GET /rerank/v1/models
 ```
 
-响应示例：
-```json
-{
-  "data": [{
-    "id": "bge-reranker-v2-m3",
-    "object": "model",
-    "created": 1720000000,
-    "owned_by": "BAAI",
-    "permission": []
-  }],
-  "object": "list"
-}
-```
-
-#### 2. 文本重排序
-
-```
-POST /rerank/v1/rerank
-```
-
-请求体：
-```json
-{
-  "query": "什么是人工智能？",
-  "documents": [
-    "人工智能是计算机科学的一个分支。",
-    "机器学习是人工智能的子领域。",
-    "今天天气不错。"
-  ],
-  "model": "bge-reranker-v2-m3",
-  "top_n": 2
-}
-```
-
-响应示例：
-```json
-{
-  "results": [
-    {"index": 0, "score": 0.95, "text": "人工智能是计算机科学的一个分支。"},
-    {"index": 1, "score": 0.87, "text": "机器学习是人工智能的子领域。"}
-  ]
-}
-```
-
-### 客户端调用示例
-
-```python
-import requests
-
-response = requests.post(
-    "http://127.0.0.1:8000/rerank/v1/rerank",
-    json={
-        "query": "如何学习Python？",
-        "documents": [
-            "Python是一种高级编程语言。",
-            "学习Python需要多实践。",
-            "JavaScript主要用于前端开发。"
-        ],
-        "top_n": 2
-    }
-)
-print(response.json())
-```
 
 ## 配置参数
 
